@@ -1,16 +1,15 @@
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.*;
 import org.openqa.selenium.WebDriver;
-import pog.UserLogin;
-import pog.UserLogout;
+import pageobject.UserLogin;
+import pageobject.UserLogout;
 import user.User;
 import user.UserGenerate;
 import user.UserSteps;
 import utils.Rest;
 
-public class UserRegistrationTest {
+public class UserRegistrationTest extends Rest {
     @Rule
     public TestUtils testUtils = new TestUtils();
     public WebDriver webDriver;
@@ -20,10 +19,10 @@ public class UserRegistrationTest {
 
     @Before
     public void setUp() {
+        restBaseUri();
         webDriver = testUtils.getDriver();
-        RestAssured.baseURI = Rest.BASE_URL;
         userLogout = new UserLogout(webDriver);
-        webDriver.get(Rest.BASE_URL + Rest.REGISTER);
+        webDriver.get(BASE_URL + REGISTER);
         userLogout.waitingForSignUpPageLoading();
     }
 
@@ -48,7 +47,7 @@ public class UserRegistrationTest {
         userLogout.insertUserLogOutData(user);
         userLogout.clickSignUpButton();
         userLogin.waitingForLoginFormLoading();
-        Assert.assertEquals(Rest.BASE_URL + Rest.LOGIN, webDriver.getCurrentUrl());
+        Assert.assertEquals(BASE_URL + LOGIN, webDriver.getCurrentUrl());
         Response response = UserSteps.login(user);
         Assert.assertEquals(200, response.statusCode());
         accessToken = response.path("accessToken");
@@ -62,7 +61,7 @@ public class UserRegistrationTest {
         userLogout.insertUserLogOutData(user);
         userLogout.clickSignUpButton();
         Assert.assertTrue(userLogout.checkSignUpWrongPasswordError());
-        Assert.assertEquals(Rest.BASE_URL + Rest.REGISTER, webDriver.getCurrentUrl());
+        Assert.assertEquals(BASE_URL + REGISTER, webDriver.getCurrentUrl());
         Response response = UserSteps.login(user);
         Assert.assertFalse(response.path("success"));
     }

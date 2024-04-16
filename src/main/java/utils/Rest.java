@@ -1,5 +1,7 @@
 package utils;
 
+import io.restassured.RestAssured;
+
 public class Rest {
     public final static String BASE_URL = "https://stellarburgers.nomoreparties.site";
     public final static String REGISTER = "/register";
@@ -9,4 +11,8 @@ public class Rest {
     public final static String API_REGISTER = "/api/auth/register";
     public final static String API_LOGIN = "/api/auth/login";
     public final static String API_USER = "/api/auth/user";
+
+    protected static String restBaseUri(){
+        return RestAssured.baseURI = BASE_URL;
+    }
 }

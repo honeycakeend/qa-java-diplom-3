@@ -1,13 +1,12 @@
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.html5.WebStorage;
-import pog.Main;
-import pog.UserLogin;
-import pog.UserProfile;
+import pageobject.Main;
+import pageobject.UserLogin;
+import pageobject.UserProfile;
 import user.User;
 import user.UserGenerate;
 import user.UserSteps;
@@ -16,7 +15,7 @@ import utils.Rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class UserProfileTest {
+public class UserProfileTest extends Rest{
     @Rule
     public TestUtils testUtils = new TestUtils();
     public Main main;
@@ -32,7 +31,7 @@ public class UserProfileTest {
         main = new Main(webDriver);
         userLogin = new UserLogin(webDriver);
         userProfile = new UserProfile(webDriver);
-        webDriver.get(Rest.BASE_URL);
+        webDriver.get(BASE_URL);
         LocalStorage localStorage = ((WebStorage) webDriver).getLocalStorage();
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
@@ -40,7 +39,7 @@ public class UserProfileTest {
 
     @BeforeClass
     public static void beforeClass() {
-        RestAssured.baseURI = Rest.BASE_URL;
+        restBaseUri();
         user = UserGenerate.createRandom();
         Response response = UserSteps.create(user);
         accessToken = response.path("accessToken");
@@ -55,7 +54,7 @@ public class UserProfileTest {
     @Test
     @DisplayName("Personal cabinet. Logout")
     public void checkProfileExitButton() {
-        webDriver.get(Rest.BASE_URL + "/account");
+        webDriver.get(BASE_URL + "/account");
         userProfile.waitProfilePageLoading();
         userProfile.clickExitProfileButton();
         userLogin.waitingForLoginFormLoading();
@@ -67,21 +66,21 @@ public class UserProfileTest {
     @Test
     @DisplayName("Checking the transition to the main page after user authorization")
     public void checkTransitionToMainPageAfterUserLoggedIn() {
-        webDriver.get(Rest.BASE_URL + "/account");
+        webDriver.get(BASE_URL + "/account");
         userProfile.waitProfilePageLoading();
         userProfile.clickLogo();
         main.waitLoadMain();
-        assertEquals(Rest.BASE_URL + "/", webDriver.getCurrentUrl());
+        assertEquals(BASE_URL + "/", webDriver.getCurrentUrl());
     }
 
     @Test
     @DisplayName("Open main page from personal cabinet by clicking the button with the logo in the header")
     public void checkTransitionFromProfileByClickOnLogoButton() {
-        webDriver.get(Rest.BASE_URL + "/account");
+        webDriver.get(BASE_URL + "/account");
         userProfile.waitProfilePageLoading();
         userProfile.clickConstructorInHeader();
         main.waitLoadMain();
-        assertEquals(Rest.BASE_URL + "/", webDriver.getCurrentUrl());
+        assertEquals(BASE_URL + "/", webDriver.getCurrentUrl());
     }
 
     @Test
@@ -90,6 +89,6 @@ public class UserProfileTest {
         main.waitLoadMain();
         main.clickOnProfileEnterButton();
         userProfile.waitProfilePageLoading();
-        assertEquals(Rest.BASE_URL + Rest.PROFILE, webDriver.getCurrentUrl());
+        assertEquals(BASE_URL + PROFILE, webDriver.getCurrentUrl());
     }
 }
